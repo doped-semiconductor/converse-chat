@@ -6,17 +6,9 @@ import SockJS from 'sockjs-client';
 const CreateJoin = ({onUpdateState}) => {
 
     const [c_userName, setC_userName] = useState();
-    const [c_roomId, setC_roomId] = useState();
-    // const [createSubscriber, setCreateSubscriber] = useState();
     
     const [j_userName, setJ_userName] = useState();
     const [j_roomId, setJ_roomId] = useState();
-
-    useEffect(() => {
-        return () => { 
-            onUpdateState(c_userName, c_roomId, 1);  
-        }    
-      }, [c_roomId]);
 
     var url = 'http://localhost:8070/ws'
     const createRoomWS = () => {
@@ -29,13 +21,11 @@ const CreateJoin = ({onUpdateState}) => {
                     console.log("Create Room Sub Reveived:")
                     console.log(message.body)
                     var msg = JSON.parse(message.body);
-                    setC_roomId(msg.text);
-                    console.log("New Room: "+msg.text)
+                    console.log("New Room: "+msg.text+" "+msg.sender)
+                    onUpdateState(msg.sender, msg.text, 1);  
                     createSub.unsubscribe();
                   }          
-                  ); 
-                // setCreateSubscriber(createSub);          
-                // Tell your username to the server
+                  );
                 stompClient.send("/app/create.topic",
                     {},
                     JSON.stringify({sender: c_userName, type: 'CREATE'})

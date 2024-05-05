@@ -66,4 +66,10 @@ public class WebSocketController {
     public void sendMessageToTopic(@DestinationVariable String topic, BasicMessage message) {
         messagingTemplate.convertAndSend("/topic/" + topic, message);
     }
+
+    @MessageMapping("/send.addUser/{topic}")
+    public void addUser(@DestinationVariable String topic, BasicMessage message){
+        messagingTemplate.convertAndSend("/topic/" + topic, message);
+        log.info("User {} connected to room {}", message.getSender(), message.getText());
+    }
 }
