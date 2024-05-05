@@ -36,13 +36,14 @@ const Chat = ({user,roomid,initMode,onUpdateState}) => {
 
   var url = 'http://localhost:8070/ws'
   const connectWS = () => {
-    console.log('Attempt to connect to WebSocket');
+    console.log('Attempt to connect to Room');
+    console.log('Room User : '+roomid+" "+user);
     var socket = new SockJS(url);
     var stompClient = Stomp.over(socket);
     stompClient.connect({},
       ()=>{
         setConnected("CONNECTED");console.log("Socket Connected");
-        const sub = stompClient.subscribe('/topic/public', (msg)=>{
+        const sub = stompClient.subscribe('/topic/'+roomid, (msg)=>{
           setMsgKeyCounter(1+msgKeyCounter);
           console.log("Subscriber Received")
           console.log(msg.body)
@@ -53,14 +54,14 @@ const Chat = ({user,roomid,initMode,onUpdateState}) => {
         }          
         );
         setSubscriber(sub);
-        stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: user, type: 'JOIN'}))
+        stompClient.send("/app/send.addUser/"+roomid, {}, JSON.stringify({sender: user, type: 'JOIN'}))
       }, (e)=>{ setConnected("COULD NOT CONNECT"); console.log("Error with socket")}); 
     setClient(stompClient);
   };
 
   const sendMessageWS = () => {
     var dialogue = myChat;
-    client.send("/app/chat.sendMessage", {}, JSON.stringify({sender: user, type: 'CHAT', text: dialogue}));
+    client.send("/app/send.message/"+roomid, {}, JSON.stringify({sender: user, type: 'CHAT', text: dialogue}));
   }
 
   
