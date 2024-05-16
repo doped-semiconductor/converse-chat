@@ -1,5 +1,6 @@
 HELP.md
 logs/
+spring.log
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
