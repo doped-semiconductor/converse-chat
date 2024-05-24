@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    stages {
+        stage('Git') {
+            steps {
+                script {
+                    echo 'Removing previously GitHub Repo'
+                    bat 'IF EXIST "converse-chat" (rmdir /s /q converse-chat)'
+                    echo 'Cloning GitHub Repo'
+                    bat 'git clone https://github.com/doped-semiconductor/converse-chat.git'
+                }
+            }
+        }
+        
+        stage('Pull Images') {
+            steps {
+                script {
+                    echo 'Pulling Docker Images'
+                    dir('converse-chat/deployment')
+                    {
+                        bat 'docker-compose pull'
+                    }
+                }
+            }
+        }
+        stage('Docker Compose') {
+            steps {
+                script {
+                    //sleep(time: 5, unit: 'SECONDS')
+                    dir('converse-chat/deployment')
+                    {
+                        bat 'docker-compose up -d --build'
+                    }
+                }
+            }
+        }
+    }
+}
