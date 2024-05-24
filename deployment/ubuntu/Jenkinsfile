@@ -10,26 +10,18 @@ pipeline {
             }
         }
         
-        stage('Pull Images') {
+        stage('Ansible') {
             steps {
-                script {
-                    echo 'Pulling Docker Images'
-                    dir('converse-chat/deployment')
-                    {
-                        sh 'docker-compose pull'
-                    }
-                }
-            }
-        }
-        stage('Docker Compose') {
-            steps {
-                script {
-                    //sleep(time: 5, unit: 'SECONDS')
-                    dir('converse-chat/deployment')
-                    {
-                        sh 'docker-compose up -d --build'
-                    }
-                }
+                ansiblePlaybook(
+                    becomeUser: null,
+                    colorized: true,
+                    credentialsId: 'localhost',
+                    disableHostKeyChecking: true,
+                    installation: 'Ansible',
+                    inventory: 'deployment/hosts.ini',
+                    playbook: 'deployment/playbook.yml',
+                    sudoUser: null
+                )
             }
         }
     }
