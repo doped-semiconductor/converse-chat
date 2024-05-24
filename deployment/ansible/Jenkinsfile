@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    stages {
+        stage('Git') {
+            steps {
+                script {
+                    echo 'Cloning GitHub Repo'
+                    sh 'git clone https://github.com/doped-semiconductor/converse-chat.git'
+                }
+            }
+        }
+        
+        stage('Ansible') {
+            steps {
+                ansiblePlaybook(
+                    becomeUser: null,
+                    colorized: true,
+                    credentialsId: 'localhost',
+                    disableHostKeyChecking: true,
+                    installation: 'Ansible',
+                    inventory: 'deployment/hosts.ini',
+                    playbook: 'deployment/playbook.yml',
+                    sudoUser: null
+                )
+            }
+        }
+    }
+}
