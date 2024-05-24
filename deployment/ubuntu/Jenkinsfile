@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    stages {
+        stage('Git') {
+            steps {
+                script {
+                    echo 'Cloning GitHub Repo'
+                    sh 'git clone https://github.com/doped-semiconductor/converse-chat.git'
+                }
+            }
+        }
+        
+        stage('Pull Images') {
+            steps {
+                script {
+                    echo 'Pulling Docker Images'
+                    dir('converse-chat/deployment')
+                    {
+                        sh 'docker-compose pull'
+                    }
+                }
+            }
+        }
+        stage('Docker Compose') {
+            steps {
+                script {
+                    //sleep(time: 5, unit: 'SECONDS')
+                    dir('converse-chat/deployment')
+                    {
+                        sh 'docker-compose up -d --build'
+                    }
+                }
+            }
+        }
+    }
+}
